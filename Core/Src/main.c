@@ -28,6 +28,7 @@
 /* USER CODE BEGIN Includes */
 #include <stdbool.h>
 #include <stdint.h>
+#include "MAX7219.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -70,18 +71,8 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-  uint8_t InitCommands[6][2] = {
-    {0x09,0x00},
-    {0x0A,0x07},
-    {0x0B,0x07},
-    {0x0C,0x00},
-    {0x0C,0x01},
-    {0x0F,0x00}
-  };
-
   uint8_t SPITransmitBuffer[2] = {0,0};
   HAL_StatusTypeDef error =  HAL_OK;
-
 
   const uint64_t IMAGES[] = {
   0x0000ea2a6e2aea00,
@@ -136,17 +127,8 @@ int main(void)
   MX_USART2_UART_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
+  error |= MX7219_Init(&hspi1);
 
-  for (uint8_t i = 0; i < 6; i++){
-    SPITransmitBuffer[0] = InitCommands[i][0];
-    SPITransmitBuffer[1] = InitCommands[i][1];
-    HAL_Delay( 500);
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_RESET);
-    error |= HAL_SPI_Transmit(&hspi1, &SPITransmitBuffer[0], 2,100);
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_SET);
-  }
-
-  SPITransmitBuffer[1] = 0x00;
   uint8_t j = 0;
 
   /* USER CODE END 2 */
@@ -157,13 +139,7 @@ int main(void)
   {
     if (transmit){
       transmit = false;
-      for (uint8_t i = 0x01; i <= 0x08; i++){
-        SPITransmitBuffer[0] = i;
-        SPITransmitBuffer[1] = IMAGES[j] >> (i - 1)*8;
-        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_RESET);
-        error |= HAL_SPI_Transmit(&hspi1, &SPITransmitBuffer[0], 2,100);
-        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_SET);
-      }
+      error |= MX7219_Render(&hspi1, IMAGES[j], SPITransmitBuffer);
       if (j==IMAGES_LEN-1){
         j = 0;
       }else{
