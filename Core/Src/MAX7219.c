@@ -1,7 +1,7 @@
 #include "MAX7219.h"
 
 
-HAL_StatusTypeDef MX7219_Init(SPI_HandleTypeDef * hspi){
+HAL_StatusTypeDef MAX7219_Init(SPI_HandleTypeDef * hspi){
     
     HAL_StatusTypeDef error;
 
@@ -14,7 +14,7 @@ HAL_StatusTypeDef MX7219_Init(SPI_HandleTypeDef * hspi){
   return error;
 };
 
-HAL_StatusTypeDef MX7219_Render(SPI_HandleTypeDef * hspi, uint64_t img, uint8_t T_Buff[2]){
+HAL_StatusTypeDef MAX7219_Render(SPI_HandleTypeDef * hspi, uint64_t img, uint8_t T_Buff[2]){
     
     HAL_StatusTypeDef error;
     

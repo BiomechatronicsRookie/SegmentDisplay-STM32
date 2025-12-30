@@ -19,7 +19,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "spi.h"
-#include "stm32f3xx_hal.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -29,6 +28,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "MAX7219.h"
+#include "Ball.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -73,6 +73,10 @@ int main(void)
   /* USER CODE BEGIN 1 */
   uint8_t SPITransmitBuffer[2] = {0,0};
   HAL_StatusTypeDef error =  HAL_OK;
+  Ball MyBall;
+
+  float InitialPosition[2] = {0.0,0.0};
+  float InitialVelocity[2] = {0.5,0.0};
 
   const uint64_t IMAGES[] = {
   0x0000ea2a6e2aea00,
@@ -100,8 +104,8 @@ int main(void)
   };
   const int IMAGES_LEN = sizeof(IMAGES)/8;
 
-
-
+  uint64_t Image = 0xFFFFFFFFFFFFFFFF;
+  uint64_t ClearMask = 0X0000000000000000;
 
   /* USER CODE END 1 */
 
@@ -127,7 +131,8 @@ int main(void)
   MX_USART2_UART_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-  error |= MX7219_Init(&hspi1);
+  error |= MAX7219_Init(&hspi1);
+  InitBall(&MyBall,InitialPosition, InitialVelocity);
 
   uint8_t j = 0;
 
@@ -139,7 +144,7 @@ int main(void)
   {
     if (transmit){
       transmit = false;
-      error |= MX7219_Render(&hspi1, IMAGES[j], SPITransmitBuffer);
+      error |= MAX7219_Render(&hspi1, IMAGES[j], SPITransmitBuffer);
       if (j==IMAGES_LEN-1){
         j = 0;
       }else{

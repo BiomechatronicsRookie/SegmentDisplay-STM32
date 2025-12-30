@@ -24,6 +24,7 @@
 
 #endif
 #include "stm32f3xx_hal_spi.h"
+#include "stm32f3xx_hal.h"
 
 #define DECODE_MODE_REG
 #define INTENSITY_REG
@@ -39,8 +40,8 @@ uint8_t INIT_COMMANDS[6][2] = {
     {0x0F,0x00}
   };
 
-HAL_StatusTypeDef MX7219_Init(SPI_HandleTypeDef * hspi);
-HAL_StatusTypeDef MX7219_Render(SPI_HandleTypeDef * hspi, uint64_t img, uint8_t T_Buff[2]);
+HAL_StatusTypeDef MAX7219_Init(SPI_HandleTypeDef * hspi);
+HAL_StatusTypeDef MAX7219_Render(SPI_HandleTypeDef * hspi, uint64_t img, uint8_t T_Buff[2]);
 
 
 
