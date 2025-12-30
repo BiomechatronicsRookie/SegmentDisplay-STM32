@@ -22,16 +22,16 @@
 #ifndef __MAX7219_H
 #define __MAX7219_H
 
-#endif
-#include "stm32f3xx_hal_spi.h"
 #include "stm32f3xx_hal.h"
+#include "stm32f3xx_hal_spi.h"
 
 #define DECODE_MODE_REG
 #define INTENSITY_REG
 #define SCAN_LIM_REG
 #define SHUTDOWN_REG
 #define DSIPLAY_REST_REG
-uint8_t INIT_COMMANDS[6][2] = {
+
+static const uint8_t INIT_COMMANDS[6][2] = {
     {0x09,0x00},
     {0x0A,0x07},
     {0x0B,0x07},
@@ -44,4 +44,4 @@ HAL_StatusTypeDef MAX7219_Init(SPI_HandleTypeDef * hspi);
 HAL_StatusTypeDef MAX7219_Render(SPI_HandleTypeDef * hspi, uint64_t img, uint8_t T_Buff[2]);
 
 
-
+#endif

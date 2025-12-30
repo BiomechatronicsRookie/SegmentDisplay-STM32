@@ -50,6 +50,8 @@
 
 /* USER CODE BEGIN PV */
 volatile bool transmit = false;
+volatile bool update = false;
+volatile uint8_t k = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -76,9 +78,9 @@ int main(void)
   Ball MyBall;
 
   float InitialPosition[2] = {0.0,0.0};
-  float InitialVelocity[2] = {0.5,0.0};
+  float InitialVelocity[2] = {0.1,0.0};
 
-  const uint64_t IMAGES[] = {
+  /*const uint64_t IMAGES[] = {
   0x0000ea2a6e2aea00,
   0x0000751537157500,
   0x0000ba8a9b8aba00,
@@ -102,9 +104,9 @@ int main(void)
   0x0000aaaabaa8aa00,
   0x0000d555dd54d500
   };
-  const int IMAGES_LEN = sizeof(IMAGES)/8;
+  const int IMAGES_LEN = sizeof(IMAGES)/8;*/
 
-  uint64_t Image = 0xFFFFFFFFFFFFFFFF;
+  uint64_t Image = 0x0000000000000000;
   uint64_t ClearMask = 0X0000000000000000;
 
   /* USER CODE END 1 */
@@ -130,26 +132,28 @@ int main(void)
   MX_TIM2_Init();
   MX_USART2_UART_Init();
   MX_SPI1_Init();
+
   /* USER CODE BEGIN 2 */
   error |= MAX7219_Init(&hspi1);
   InitBall(&MyBall,InitialPosition, InitialVelocity);
-
   uint8_t j = 0;
-
   /* USER CODE END 2 */
-
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-    if (transmit){
-      transmit = false;
-      error |= MAX7219_Render(&hspi1, IMAGES[j], SPITransmitBuffer);
-      if (j==IMAGES_LEN-1){
-        j = 0;
-      }else{
+  while (1){
+    if (update){
+      update = false;
+      Update(&MyBall, 0.01, 2.2, 0.99);
+      if (transmit){
         j++;
-      }
+        if (j == 63){
+          j = 0;
+        }
+        k = 0;
+        Image |= (uint64_t) 1 << (MyBall.posx_int*8 + MyBall.posy_int);
+        error |= MAX7219_Render(&hspi1, Image, SPITransmitBuffer);
+        Image &= ClearMask;
+        } 
     }
     /* USER CODE END WHILE */
 
@@ -208,7 +212,11 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim2)
 {
-  transmit = true;
+  update = true;
+  k += 1;
+  if (k == 5){
+    transmit = true;
+  }
 }
 
 /* USER CODE END 4 */

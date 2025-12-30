@@ -2,7 +2,6 @@
 #define _BALL_H
 
 #include <stdint.h>
-#endif
 
 typedef struct{
 uint8_t posx_int;
@@ -13,6 +12,8 @@ float velx;
 float vely;
 } Ball;
 
-void Update(Ball * hball, float deltat_t);
+void Update(Ball * hball, float deltat_t, float gravity, float frict);
 
 void InitBall(Ball * hball, float * InitPos, float * InitVel);
+
+#endif
