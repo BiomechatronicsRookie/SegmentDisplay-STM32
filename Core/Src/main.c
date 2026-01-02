@@ -140,7 +140,7 @@ int main(void)
   /* USER CODE END 2 */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1){
+  while (!error){
     if (update){
       update = false;
       Update(&MyBall, 0.01, 2.2, 0.99);
