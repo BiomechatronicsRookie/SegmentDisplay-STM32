@@ -21,7 +21,7 @@
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
-#include "usb.h"
+#include "usb_device.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -30,6 +30,7 @@
 #include <stdint.h>
 #include "MAX7219.h"
 #include "Ball.h"
+#include "stm32f3xx_hal.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -118,7 +119,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+ 
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -133,7 +134,7 @@ int main(void)
   MX_TIM2_Init();
   MX_USART2_UART_Init();
   MX_SPI1_Init();
-  MX_USB_PCD_Init();
+  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
   error |= MAX7219_Init(&hspi1);
   InitBall(&MyBall,InitialPosition, InitialVelocity);
@@ -145,7 +146,7 @@ int main(void)
   while (!error){
     if (update){
       update = false;
-      Update(&MyBall, 0.01, 2.2, 0.99);
+      Update(&MyBall, 0.01, 2.2, 1.0);
       if (transmit){
         j++;
         if (j == 63){
